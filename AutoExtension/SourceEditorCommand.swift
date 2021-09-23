@@ -53,6 +53,18 @@ public class MySyntaxVisitor: SyntaxVisitor {
     public var protocolDeclSyntaxList = [GeneratedProtocolDeclSyntax]()
 
     public override func visit(_ node: ClassDeclSyntax) -> SyntaxVisitorContinueKind {
+        
+        print("\(node.classKeyword.text) \(node.identifier.text)")
+        
+        if let inheritedTypeCollection = node.inheritanceClause?.inheritedTypeCollection {
+            for inheritedType in inheritedTypeCollection {
+                let typeName = inheritedType.typeName.as(SwiftSyntax.SimpleTypeIdentifierSyntax.self)
+                let isGeneric = typeName?.genericArgumentClause != nil
+                let name = typeName?.name.text ?? ""
+                print(name)
+            }
+        }
+        
         let functions = node.members.members.compactMap { (member) -> FunctionDeclSyntax? in
             guard let functionDecl = member.decl.as(FunctionDeclSyntax.self) else {
                 return nil
