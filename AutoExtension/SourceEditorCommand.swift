@@ -49,6 +49,25 @@ public struct GeneratedProtocolDeclSyntax {
     public let prefixComment: String
 }
 
+// MARK: - Judge Generics
+
+protocol GenericJudgable {
+    var genericParameterClause: GenericParameterClauseSyntax? { get }
+}
+
+extension GenericJudgable {
+    func isGenerics() -> Bool {
+        genericParameterClause != nil
+    }
+}
+
+extension ClassDeclSyntax: GenericJudgable {}
+extension StructDeclSyntax: GenericJudgable {}
+extension FunctionDeclSyntax: GenericJudgable {}
+extension InitializerDeclSyntax: GenericJudgable {}
+
+// MARK: -
+
 public class MySyntaxVisitor: SyntaxVisitor {
     public var protocolDeclSyntaxList = [GeneratedProtocolDeclSyntax]()
 
@@ -56,6 +75,10 @@ public class MySyntaxVisitor: SyntaxVisitor {
         
         print("\(node.classKeyword.text) \(node.identifier.text)")
         
+        if node.isGenerics() {
+            print("Generics !!!")
+        }
+
         if let inheritedTypeCollection = node.inheritanceClause?.inheritedTypeCollection {
             for inheritedType in inheritedTypeCollection {
                 let typeName = inheritedType.typeName.as(SwiftSyntax.SimpleTypeIdentifierSyntax.self)
